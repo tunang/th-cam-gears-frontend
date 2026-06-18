@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { useProducts } from '@/src/hooks/use-products';
+import { useState, use } from 'react';
+import { useProductsByCategory } from '@/src/hooks/use-products';
 import ProductCard from '@/src/components/product-card';
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-export default function HomePage() {
+export default function CategoryPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [page, setPage] = useState(1);
-  const { data, isLoading, error } = useProducts(page, 12);
+  const { data, isLoading, error } = useProductsByCategory(id, page, 12);
   const router = useRouter();
 
   const handleAuthRequired = () => {
@@ -22,11 +23,13 @@ export default function HomePage() {
           className="text-2xl font-bold tracking-tight sm:text-3xl"
           style={{ color: 'var(--p-color-text)' }}
         >
-          Sản phẩm mới nhất
+          {data?.category?.name || 'Danh mục sản phẩm'}
         </h1>
-        <p className="mt-2 text-sm" style={{ color: 'var(--p-color-text-secondary)' }}>
-          Khám phá các thiết bị camera và phụ kiện chuyên nghiệp.
-        </p>
+        {data?.category?.description && (
+          <p className="mt-2 text-sm" style={{ color: 'var(--p-color-text-secondary)' }}>
+            {data.category.description}
+          </p>
+        )}
       </div>
 
       {isLoading ? (
@@ -38,12 +41,12 @@ export default function HomePage() {
           className="rounded-lg p-4 text-sm" 
           style={{ background: 'var(--p-color-bg-surface-critical)', color: 'var(--p-color-text-critical)' }}
         >
-          Đã xảy ra lỗi khi tải sản phẩm. Vui lòng thử lại sau.
+          Đã xảy ra lỗi khi tải danh mục. Vui lòng thử lại sau.
         </div>
       ) : data?.data.length === 0 ? (
         <div className="flex h-64 flex-col items-center justify-center gap-4 rounded-xl border border-dashed p-8 text-center" style={{ borderColor: 'var(--p-color-border)' }}>
           <p className="text-base font-medium" style={{ color: 'var(--p-color-text-secondary)' }}>
-            Chưa có sản phẩm nào
+            Chưa có sản phẩm nào trong danh mục này
           </p>
         </div>
       ) : (

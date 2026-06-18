@@ -1,26 +1,143 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Brand ─────────────────────────────────────────── */
+  --p-color-bg-fill-brand: rgba(48, 48, 48, 1);
+  --p-color-bg-fill-brand-hover: rgba(26, 26, 26, 1);
+  --p-color-bg-fill-brand-active: rgba(26, 26, 26, 1);
+  --p-color-text-brand-on-bg-fill: rgba(255, 255, 255, 1);
+  --shopify-green: #008060;
+
+  /* ── Backgrounds ───────────────────────────────────── */
+  --p-color-bg: rgba(241, 241, 241, 1);
+  --p-color-bg-surface: rgba(255, 255, 255, 1);
+  --p-color-bg-surface-hover: rgba(247, 247, 247, 1);
+  --p-color-bg-surface-active: rgba(243, 243, 243, 1);
+  --p-color-bg-surface-secondary: rgba(247, 247, 247, 1);
+
+  /* ── Text ──────────────────────────────────────────── */
+  --p-color-text: rgba(48, 48, 48, 1);
+  --p-color-text-secondary: rgba(97, 97, 97, 1);
+  --p-color-text-disabled: rgba(181, 181, 181, 1);
+  --p-color-text-link: rgba(0, 91, 211, 1);
+  --p-color-text-link-hover: rgba(0, 66, 153, 1);
+  --p-color-text-critical: rgba(142, 11, 33, 1);
+  --p-color-text-success: rgba(1, 75, 64, 1);
+
+  /* ── Borders ───────────────────────────────────────── */
+  --p-color-border: rgba(227, 227, 227, 1);
+  --p-color-border-hover: rgba(204, 204, 204, 1);
+  --p-color-border-secondary: rgba(235, 235, 235, 1);
+  --p-color-border-focus: rgba(0, 91, 211, 1);
+  --p-color-border-critical-secondary: rgba(142, 11, 33, 1);
+
+  /* ── Inputs ────────────────────────────────────────── */
+  --p-color-input-bg-surface: rgba(253, 253, 253, 1);
+  --p-color-input-bg-surface-hover: rgba(250, 250, 250, 1);
+  --p-color-input-bg-surface-active: rgba(247, 247, 247, 1);
+  --p-color-input-border: rgba(138, 138, 138, 1);
+  --p-color-input-border-hover: rgba(97, 97, 97, 1);
+  --p-color-input-border-active: rgba(26, 26, 26, 1);
+
+  /* ── Semantic ──────────────────────────────────────── */
+  --p-color-bg-fill-critical: rgba(199, 10, 36, 1);
+  --p-color-bg-surface-critical: rgba(254, 232, 235, 1);
+  --p-color-bg-fill-success: rgba(4, 123, 93, 1);
+  --p-color-bg-surface-success: rgba(205, 254, 212, 1);
+  --p-color-bg-fill-info: rgba(145, 208, 255, 1);
+
+  /* ── Shadows ───────────────────────────────────────── */
+  --p-shadow-100: 0px 1px 0px 0px rgba(26, 26, 26, 0.07);
+  --p-shadow-200: 0px 3px 1px -1px rgba(26, 26, 26, 0.07);
+  --p-shadow-300: 0px 4px 6px -2px rgba(26, 26, 26, 0.20);
+  --p-shadow-400: 0px 8px 16px -4px rgba(26, 26, 26, 0.22);
+
+  /* ── Spacing ───────────────────────────────────────── */
+  --p-space-100: 4px;
+  --p-space-200: 8px;
+  --p-space-300: 12px;
+  --p-space-400: 16px;
+  --p-space-500: 20px;
+  --p-space-600: 24px;
+  --p-space-800: 32px;
+
+  /* ── Border Radius ─────────────────────────────────── */
+  --p-border-radius-100: 4px;
+  --p-border-radius-150: 6px;
+  --p-border-radius-200: 8px;
+  --p-border-radius-300: 12px;
+  --p-border-radius-full: 9999px;
+
+  /* ── Motion ────────────────────────────────────────── */
+  --p-motion-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --p-motion-duration-100: 100ms;
+  --p-motion-duration-150: 150ms;
+  --p-motion-duration-200: 200ms;
+  --p-motion-duration-300: 300ms;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--p-color-bg);
+  --color-foreground: var(--p-color-text);
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'San Francisco', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--p-color-bg);
+  color: var(--p-color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Focus Ring ────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--p-color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ── Animations ────────────────────────────────────────── */
+@keyframes appear-below {
+  from {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
