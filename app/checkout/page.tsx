@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/src/hooks/use-cart';
 import { useAddresses } from '@/src/hooks/use-address';
-import { useCheckout } from '@/src/hooks/use-orders';
+import { useCheckout, useSavePaymentLink } from '@/src/hooks/use-orders';
 import { prepareSepayCheckout, type SepayCheckoutData } from '@/app/actions/checkout';
 import { MapPin, CreditCard, Loader2, Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -21,6 +21,7 @@ export default function CheckoutPage() {
   const { data: cart, isLoading: isLoadingCart } = useCart();
   const { data: addresses, isLoading: isLoadingAddresses } = useAddresses();
   const checkoutMut = useCheckout();
+  const savePaymentLinkMut = useSavePaymentLink();
 
   const [selectedAddressId, setSelectedAddressId] = React.useState<string>('');
   const [paymentMethod, setPaymentMethod] = React.useState<'SEPAY' | 'COD'>('SEPAY');
@@ -31,6 +32,8 @@ export default function CheckoutPage() {
   React.useEffect(() => {
     if (addresses && addresses.length > 0 && !selectedAddressId) {
       const defaultAddr = addresses.find((a) => a.isDefault) || addresses[0];
+      // The initial address arrives asynchronously from React Query.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedAddressId(defaultAddr.id);
     }
   }, [addresses, selectedAddressId]);
@@ -62,6 +65,10 @@ export default function CheckoutPage() {
                 orderInvoiceNumber: data.order.orderNumber,
                 orderAmount: Number(data.payment.amount),
                 orderDescription: `Thanh toan don hang ${data.order.orderNumber}`,
+              });
+              await savePaymentLinkMut.mutateAsync({
+                orderId: data.order.id,
+                paymentLink: sepayCheckout.paymentLink,
               });
               setSepayData(sepayCheckout);
             } catch {
@@ -329,7 +336,7 @@ export default function CheckoutPage() {
 
               <button
                 onClick={handleCheckout}
-                disabled={checkoutMut.isPending || !selectedAddressId}
+                disabled={checkoutMut.isPending || savePaymentLinkMut.isPending || !selectedAddressId}
                 className="flex w-full items-center justify-center rounded-md py-3 font-semibold transition-colors disabled:opacity-50"
                 style={{ background: 'var(--p-color-bg-fill-brand)', color: 'white' }}
                 onMouseEnter={(e) => {

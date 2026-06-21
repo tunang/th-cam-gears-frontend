@@ -7,6 +7,7 @@ import { useMyOrders, useOrderPayment, type CheckoutResult } from '@/src/hooks/u
 import { PaymentInfoDialog } from '@/src/components/payment-info-dialog';
 import { Loader2, PackageOpen, ChevronRight, CreditCard } from 'lucide-react';
 import type { Order } from '@/src/utils/types';
+import { submitSepayPayment } from '@/src/utils/sepay';
 
 function formatPrice(price: number | string) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(price));
@@ -39,13 +40,19 @@ export default function MyOrdersPage() {
   );
 
   const checkoutResult: CheckoutResult | null = React.useMemo(() => {
-    if (payingOrder && paymentData) {
+    if (payingOrder && paymentData && !paymentData.paymentLink) {
       return {
         order: payingOrder,
         payment: paymentData,
       };
     }
     return null;
+  }, [payingOrder, paymentData]);
+
+  React.useEffect(() => {
+    if (payingOrder && paymentData?.paymentLink) {
+      submitSepayPayment(paymentData.paymentLink);
+    }
   }, [payingOrder, paymentData]);
 
   if (isLoading) {

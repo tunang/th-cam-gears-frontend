@@ -11,6 +11,7 @@ const client = new SePayPgClient({
 export interface SepayCheckoutData {
   checkoutUrl: string;
   formFields: Record<string, string | number | undefined>;
+  paymentLink: string;
 }
 
 export async function prepareSepayCheckout(params: {
@@ -37,5 +38,9 @@ export async function prepareSepayCheckout(params: {
   return {
     checkoutUrl: checkoutURL,
     formFields: checkoutFormfields,
+    paymentLink: JSON.stringify({
+      checkoutUrl: checkoutURL,
+      formFields: checkoutFormfields,
+    }),
   };
 }

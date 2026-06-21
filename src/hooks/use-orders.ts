@@ -4,12 +4,16 @@ import type { Order, PaginatedResponse } from '@/src/utils/types';
 import useAuthStore from '@/src/store/auth.store';
 
 export interface CheckoutResult {
-  order: any;
+  order: {
+    id: string;
+    orderNumber: string;
+  };
   payment: {
     id: string;
     amount: string;
     content: string;
     status: string;
+    paymentLink: string | null;
     bankName: string;
     accountNumber: string;
     accountName: string;
@@ -29,6 +33,14 @@ export function useCheckout() {
     mutationFn: async (dto) => {
       const res = await api.post<CheckoutResult>('/orders/checkout', dto);
       return res.data;
+    },
+  });
+}
+
+export function useSavePaymentLink() {
+  return useMutation<void, Error, { orderId: string; paymentLink: string }>({
+    mutationFn: async ({ orderId, paymentLink }) => {
+      await api.patch(`/orders/${orderId}/payment-link`, { paymentLink });
     },
   });
 }

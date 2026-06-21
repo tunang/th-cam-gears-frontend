@@ -1,13 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useOrder, useOrderPayment, type CheckoutResult } from '@/src/hooks/use-orders';
 import { PaymentInfoDialog } from '@/src/components/payment-info-dialog';
 import { Loader2, ArrowLeft, Package, MapPin, CreditCard, CalendarDays, FileText } from 'lucide-react';
 import type { Order } from '@/src/utils/types';
+import { submitSepayPayment } from '@/src/utils/sepay';
 
 function formatPrice(price: number | string) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(price));
@@ -56,13 +57,19 @@ export default function OrderDetailPage() {
   );
 
   const checkoutResult: CheckoutResult | null = React.useMemo(() => {
-    if (payingOrder && paymentData) {
+    if (payingOrder && paymentData && !paymentData.paymentLink) {
       return {
         order: payingOrder,
         payment: paymentData,
       };
     }
     return null;
+  }, [payingOrder, paymentData]);
+
+  React.useEffect(() => {
+    if (payingOrder && paymentData?.paymentLink) {
+      submitSepayPayment(paymentData.paymentLink);
+    }
   }, [payingOrder, paymentData]);
 
   if (isLoading) {

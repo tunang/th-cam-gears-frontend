@@ -91,6 +91,7 @@ export interface Payment {
   method: 'SEPAY' | 'COD';
   content: string;
   transactionId: string | null;
+  paymentLink: string | null;
   status: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
   paidAt: string | null;
   createdAt: string;
