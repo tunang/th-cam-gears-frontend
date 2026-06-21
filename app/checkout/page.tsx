@@ -1,18 +1,24 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useCart } from '@/src/hooks/use-cart';
-import { useAddresses } from '@/src/hooks/use-address';
-import { useCheckout, useSavePaymentLink } from '@/src/hooks/use-orders';
-import { prepareSepayCheckout, type SepayCheckoutData } from '@/app/actions/checkout';
-import { MapPin, CreditCard, Loader2, Plus } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { useCart } from "@/src/hooks/use-cart";
+import { useAddresses } from "@/src/hooks/use-address";
+import { useCheckout, useSavePaymentLink } from "@/src/hooks/use-orders";
+import {
+  prepareSepayCheckout,
+  type SepayCheckoutData,
+} from "@/app/actions/checkout";
+import { MapPin, CreditCard, Loader2, Plus } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(price);
 }
 
 export default function CheckoutPage() {
@@ -23,10 +29,14 @@ export default function CheckoutPage() {
   const checkoutMut = useCheckout();
   const savePaymentLinkMut = useSavePaymentLink();
 
-  const [selectedAddressId, setSelectedAddressId] = React.useState<string>('');
-  const [paymentMethod, setPaymentMethod] = React.useState<'SEPAY' | 'COD'>('SEPAY');
-  const [note, setNote] = React.useState('');
-  const [sepayData, setSepayData] = React.useState<SepayCheckoutData | null>(null);
+  const [selectedAddressId, setSelectedAddressId] = React.useState<string>("");
+  const [paymentMethod, setPaymentMethod] = React.useState<"SEPAY" | "COD">(
+    "SEPAY",
+  );
+  const [note, setNote] = React.useState("");
+  const [sepayData, setSepayData] = React.useState<SepayCheckoutData | null>(
+    null,
+  );
   const sepayFormRef = React.useRef<HTMLFormElement>(null);
 
   React.useEffect(() => {
@@ -39,12 +49,15 @@ export default function CheckoutPage() {
   }, [addresses, selectedAddressId]);
 
   const items = cart?.items || [];
-  const totalAmount = items.reduce((sum, item) => sum + Number(item.variant.price) * item.quantity, 0);
+  const totalAmount = items.reduce(
+    (sum, item) => sum + Number(item.variant.price) * item.quantity,
+    0,
+  );
 
   const handleCheckout = async () => {
     const address = addresses?.find((a) => a.id === selectedAddressId);
     if (!address) {
-      alert('Vui lòng chọn địa chỉ giao hàng');
+      alert("Vui lòng chọn địa chỉ giao hàng");
       return;
     }
 
@@ -58,8 +71,8 @@ export default function CheckoutPage() {
       },
       {
         onSuccess: async (data) => {
-          queryClient.invalidateQueries({ queryKey: ['cart'] });
-          if (paymentMethod === 'SEPAY') {
+          queryClient.invalidateQueries({ queryKey: ["cart"] });
+          if (paymentMethod === "SEPAY") {
             try {
               const sepayCheckout = await prepareSepayCheckout({
                 orderInvoiceNumber: data.order.orderNumber,
@@ -72,16 +85,16 @@ export default function CheckoutPage() {
               });
               setSepayData(sepayCheckout);
             } catch {
-              alert('Không thể khởi tạo thanh toán SePay. Vui lòng thử lại.');
+              alert("Không thể khởi tạo thanh toán SePay. Vui lòng thử lại.");
             }
           } else {
-            router.push('/checkout/success');
+            router.push("/checkout/success");
           }
         },
         onError: (err) => {
-          alert('Có lỗi xảy ra: ' + err.message);
+          alert("Có lỗi xảy ra: " + err.message);
         },
-      }
+      },
     );
   };
 
@@ -95,7 +108,10 @@ export default function CheckoutPage() {
   if (isLoadingCart || isLoadingAddresses) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--p-color-icon-secondary)' }} />
+        <Loader2
+          className="h-8 w-8 animate-spin"
+          style={{ color: "var(--p-color-icon-secondary)" }}
+        />
       </div>
     );
   }
@@ -104,13 +120,13 @@ export default function CheckoutPage() {
     return (
       <div className="mx-auto max-w-lg p-8 text-center">
         <h1 className="mb-4 text-2xl font-bold">Giỏ hàng trống</h1>
-        <p className="mb-8" style={{ color: 'var(--p-color-text-secondary)' }}>
+        <p className="mb-8" style={{ color: "var(--p-color-text-secondary)" }}>
           Bạn chưa có sản phẩm nào trong giỏ hàng để thanh toán.
         </p>
         <Link
           href="/"
           className="inline-flex rounded-md px-6 py-3 font-semibold transition-colors"
-          style={{ background: 'var(--p-color-bg-fill-brand)', color: 'white' }}
+          style={{ background: "var(--p-color-bg-fill-brand)", color: "white" }}
         >
           Tiếp tục mua sắm
         </Link>
@@ -120,7 +136,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-8">
-      <h1 className="mb-8 text-2xl font-bold" style={{ color: 'var(--p-color-text)' }}>
+      <h1
+        className="mb-8 text-2xl font-bold"
+        style={{ color: "var(--p-color-text)" }}
+      >
         Thanh toán
       </h1>
 
@@ -130,16 +149,22 @@ export default function CheckoutPage() {
           {/* Address Section */}
           <div
             className="rounded-xl border p-6 shadow-sm"
-            style={{ background: 'var(--p-color-bg-surface)', borderColor: 'var(--p-color-border-secondary)' }}
+            style={{
+              background: "var(--p-color-bg-surface)",
+              borderColor: "var(--p-color-border-secondary)",
+            }}
           >
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-lg font-semibold" style={{ color: 'var(--p-color-text)' }}>
+              <h2
+                className="flex items-center gap-2 text-lg font-semibold"
+                style={{ color: "var(--p-color-text)" }}
+              >
                 <MapPin className="h-5 w-5" /> Địa chỉ giao hàng
               </h2>
               <Link
                 href="/profile/address"
                 className="flex items-center gap-1 text-sm font-medium transition-colors"
-                style={{ color: 'var(--p-color-text-link)' }}
+                style={{ color: "var(--p-color-text-link)" }}
               >
                 <Plus className="h-4 w-4" /> Thêm địa chỉ mới
               </Link>
@@ -151,10 +176,15 @@ export default function CheckoutPage() {
                   <label
                     key={addr.id}
                     className={`flex cursor-pointer gap-3 rounded-lg border p-4 transition-colors ${
-                      selectedAddressId === addr.id ? 'border-[var(--p-color-border-focus)] bg-[var(--p-color-bg-surface-info)]' : ''
+                      selectedAddressId === addr.id
+                        ? "border-[var(--p-color-border-focus)] bg-[var(--p-color-bg-surface-info)]"
+                        : ""
                     }`}
                     style={{
-                      borderColor: selectedAddressId === addr.id ? 'var(--p-color-border-focus)' : 'var(--p-color-border)',
+                      borderColor:
+                        selectedAddressId === addr.id
+                          ? "var(--p-color-border-focus)"
+                          : "var(--p-color-border)",
                     }}
                   >
                     <input
@@ -167,22 +197,34 @@ export default function CheckoutPage() {
                     />
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold" style={{ color: 'var(--p-color-text)' }}>
+                        <span
+                          className="font-semibold"
+                          style={{ color: "var(--p-color-text)" }}
+                        >
                           {addr.name}
                         </span>
-                        <span className="text-sm font-medium" style={{ color: 'var(--p-color-text-secondary)' }}>
+                        <span
+                          className="text-sm font-medium"
+                          style={{ color: "var(--p-color-text-secondary)" }}
+                        >
                           {addr.phone}
                         </span>
                         {addr.isDefault && (
                           <span
                             className="rounded px-2 py-0.5 text-[10px] font-bold uppercase"
-                            style={{ background: 'var(--p-color-bg-fill-success)', color: 'white' }}
+                            style={{
+                              background: "var(--p-color-bg-fill-success)",
+                              color: "white",
+                            }}
                           >
                             Mặc định
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-sm" style={{ color: 'var(--p-color-text-secondary)' }}>
+                      <p
+                        className="mt-1 text-sm"
+                        style={{ color: "var(--p-color-text-secondary)" }}
+                      >
                         {addr.address}
                       </p>
                     </div>
@@ -190,14 +232,23 @@ export default function CheckoutPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed p-6 text-center" style={{ borderColor: 'var(--p-color-border)' }}>
-                <p className="mb-2 text-sm" style={{ color: 'var(--p-color-text-secondary)' }}>
+              <div
+                className="rounded-lg border border-dashed p-6 text-center"
+                style={{ borderColor: "var(--p-color-border)" }}
+              >
+                <p
+                  className="mb-2 text-sm"
+                  style={{ color: "var(--p-color-text-secondary)" }}
+                >
                   Bạn chưa có địa chỉ giao hàng nào
                 </p>
                 <Link
                   href="/profile/address"
                   className="inline-flex rounded-md px-4 py-2 text-sm font-semibold transition-colors"
-                  style={{ background: 'var(--p-color-bg-fill-brand)', color: 'white' }}
+                  style={{
+                    background: "var(--p-color-bg-fill-brand)",
+                    color: "white",
+                  }}
                 >
                   Thêm địa chỉ
                 </Link>
@@ -208,33 +259,50 @@ export default function CheckoutPage() {
           {/* Payment Method Section */}
           <div
             className="rounded-xl border p-6 shadow-sm"
-            style={{ background: 'var(--p-color-bg-surface)', borderColor: 'var(--p-color-border-secondary)' }}
+            style={{
+              background: "var(--p-color-bg-surface)",
+              borderColor: "var(--p-color-border-secondary)",
+            }}
           >
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold" style={{ color: 'var(--p-color-text)' }}>
+            <h2
+              className="mb-4 flex items-center gap-2 text-lg font-semibold"
+              style={{ color: "var(--p-color-text)" }}
+            >
               <CreditCard className="h-5 w-5" /> Phương thức thanh toán
             </h2>
             <div className="flex flex-col gap-3">
               <label
                 className={`flex cursor-pointer gap-3 rounded-lg border p-4 transition-colors ${
-                  paymentMethod === 'SEPAY' ? 'border-[var(--p-color-border-focus)] bg-[var(--p-color-bg-surface-info)]' : ''
+                  paymentMethod === "SEPAY"
+                    ? "border-[var(--p-color-border-focus)] bg-[var(--p-color-bg-surface-info)]"
+                    : ""
                 }`}
                 style={{
-                  borderColor: paymentMethod === 'SEPAY' ? 'var(--p-color-border-focus)' : 'var(--p-color-border)',
+                  borderColor:
+                    paymentMethod === "SEPAY"
+                      ? "var(--p-color-border-focus)"
+                      : "var(--p-color-border)",
                 }}
               >
                 <input
                   type="radio"
                   name="payment"
                   value="SEPAY"
-                  checked={paymentMethod === 'SEPAY'}
-                  onChange={() => setPaymentMethod('SEPAY')}
+                  checked={paymentMethod === "SEPAY"}
+                  onChange={() => setPaymentMethod("SEPAY")}
                   className="mt-1 h-4 w-4"
                 />
                 <div>
-                  <p className="font-semibold" style={{ color: 'var(--p-color-text)' }}>
+                  <p
+                    className="font-semibold"
+                    style={{ color: "var(--p-color-text)" }}
+                  >
                     Chuyển khoản ngân hàng (SEPAY)
                   </p>
-                  <p className="text-sm" style={{ color: 'var(--p-color-text-secondary)' }}>
+                  <p
+                    className="text-sm"
+                    style={{ color: "var(--p-color-text-secondary)" }}
+                  >
                     Quét mã QR để chuyển khoản tự động
                   </p>
                 </div>
@@ -242,25 +310,36 @@ export default function CheckoutPage() {
 
               <label
                 className={`flex cursor-pointer gap-3 rounded-lg border p-4 transition-colors ${
-                  paymentMethod === 'COD' ? 'border-[var(--p-color-border-focus)] bg-[var(--p-color-bg-surface-info)]' : ''
+                  paymentMethod === "COD"
+                    ? "border-[var(--p-color-border-focus)] bg-[var(--p-color-bg-surface-info)]"
+                    : ""
                 }`}
                 style={{
-                  borderColor: paymentMethod === 'COD' ? 'var(--p-color-border-focus)' : 'var(--p-color-border)',
+                  borderColor:
+                    paymentMethod === "COD"
+                      ? "var(--p-color-border-focus)"
+                      : "var(--p-color-border)",
                 }}
               >
                 <input
                   type="radio"
                   name="payment"
                   value="COD"
-                  checked={paymentMethod === 'COD'}
-                  onChange={() => setPaymentMethod('COD')}
+                  checked={paymentMethod === "COD"}
+                  onChange={() => setPaymentMethod("COD")}
                   className="mt-1 h-4 w-4"
                 />
                 <div>
-                  <p className="font-semibold" style={{ color: 'var(--p-color-text)' }}>
+                  <p
+                    className="font-semibold"
+                    style={{ color: "var(--p-color-text)" }}
+                  >
                     Thanh toán khi nhận hàng (COD)
                   </p>
-                  <p className="text-sm" style={{ color: 'var(--p-color-text-secondary)' }}>
+                  <p
+                    className="text-sm"
+                    style={{ color: "var(--p-color-text-secondary)" }}
+                  >
                     Thanh toán bằng tiền mặt khi giao hàng
                   </p>
                 </div>
@@ -273,16 +352,25 @@ export default function CheckoutPage() {
         <div className="w-full lg:w-[380px]">
           <div
             className="sticky top-6 rounded-xl border p-6 shadow-sm"
-            style={{ background: 'var(--p-color-bg-surface)', borderColor: 'var(--p-color-border-secondary)' }}
+            style={{
+              background: "var(--p-color-bg-surface)",
+              borderColor: "var(--p-color-border-secondary)",
+            }}
           >
-            <h2 className="mb-4 text-lg font-semibold" style={{ color: 'var(--p-color-text)' }}>
+            <h2
+              className="mb-4 text-lg font-semibold"
+              style={{ color: "var(--p-color-text)" }}
+            >
               Đơn hàng của bạn
             </h2>
 
             <div className="mb-6 flex flex-col gap-4">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-3">
-                  <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border" style={{ borderColor: 'var(--p-color-border-secondary)' }}>
+                  <div
+                    className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border"
+                    style={{ borderColor: "var(--p-color-border-secondary)" }}
+                  >
                     {item.variant.product.thumbnailUrl && (
                       <Image
                         src={item.variant.product.thumbnailUrl}
@@ -293,13 +381,22 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   <div className="flex flex-1 flex-col min-w-0">
-                    <p className="truncate font-semibold text-sm" style={{ color: 'var(--p-color-text)' }}>
+                    <p
+                      className="truncate font-semibold text-sm"
+                      style={{ color: "var(--p-color-text)" }}
+                    >
                       {item.variant.product.name}
                     </p>
-                    <p className="text-xs" style={{ color: 'var(--p-color-text-secondary)' }}>
+                    <p
+                      className="text-xs"
+                      style={{ color: "var(--p-color-text-secondary)" }}
+                    >
                       {item.variant.name} x {item.quantity}
                     </p>
-                    <p className="mt-1 font-semibold text-sm" style={{ color: 'var(--p-color-text)' }}>
+                    <p
+                      className="mt-1 font-semibold text-sm"
+                      style={{ color: "var(--p-color-text)" }}
+                    >
                       {formatPrice(Number(item.variant.price))}
                     </p>
                   </div>
@@ -308,7 +405,10 @@ export default function CheckoutPage() {
             </div>
 
             <div className="mb-6">
-              <label className="mb-2 block text-sm font-medium" style={{ color: 'var(--p-color-text)' }}>
+              <label
+                className="mb-2 block text-sm font-medium"
+                style={{ color: "var(--p-color-text)" }}
+              >
                 Ghi chú đơn hàng
               </label>
               <textarea
@@ -317,43 +417,64 @@ export default function CheckoutPage() {
                 placeholder="Ví dụ: Giao hàng giờ hành chính..."
                 className="w-full rounded-md border p-3 text-sm focus:outline-none"
                 style={{
-                  background: 'var(--p-color-input-bg-surface)',
-                  borderColor: 'var(--p-color-input-border)',
+                  background: "var(--p-color-input-bg-surface)",
+                  borderColor: "var(--p-color-input-border)",
                 }}
                 rows={3}
               />
             </div>
 
-            <div className="border-t pt-4" style={{ borderColor: 'var(--p-color-border-secondary)' }}>
+            <div
+              className="border-t pt-4"
+              style={{ borderColor: "var(--p-color-border-secondary)" }}
+            >
               <div className="flex items-center justify-between mb-4">
-                <span className="font-semibold" style={{ color: 'var(--p-color-text)' }}>
+                <span
+                  className="font-semibold"
+                  style={{ color: "var(--p-color-text)" }}
+                >
                   Tổng cộng
                 </span>
-                <span className="text-xl font-bold" style={{ color: 'var(--p-color-text-critical)' }}>
+                <span
+                  className="text-xl font-bold"
+                  style={{ color: "var(--p-color-text-critical)" }}
+                >
                   {formatPrice(totalAmount)}
                 </span>
               </div>
 
               <button
                 onClick={handleCheckout}
-                disabled={checkoutMut.isPending || savePaymentLinkMut.isPending || !selectedAddressId}
+                disabled={
+                  checkoutMut.isPending ||
+                  savePaymentLinkMut.isPending ||
+                  !selectedAddressId
+                }
                 className="flex w-full items-center justify-center rounded-md py-3 font-semibold transition-colors disabled:opacity-50"
-                style={{ background: 'var(--p-color-bg-fill-brand)', color: 'white' }}
+                style={{
+                  background: "var(--p-color-bg-fill-brand)",
+                  color: "white",
+                }}
                 onMouseEnter={(e) => {
-                  if (!e.currentTarget.disabled) e.currentTarget.style.background = 'var(--p-color-bg-fill-brand-hover)';
+                  if (!e.currentTarget.disabled)
+                    e.currentTarget.style.background =
+                      "var(--p-color-bg-fill-brand-hover)";
                 }}
                 onMouseLeave={(e) => {
-                  if (!e.currentTarget.disabled) e.currentTarget.style.background = 'var(--p-color-bg-fill-brand)';
+                  if (!e.currentTarget.disabled)
+                    e.currentTarget.style.background =
+                      "var(--p-color-bg-fill-brand)";
                 }}
               >
                 {checkoutMut.isPending ? (
                   <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Đang xử lý...
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Đang xử
+                    lý...
                   </>
-                ) : paymentMethod === 'SEPAY' ? (
-                  'Thanh toán qua SePay'
+                ) : paymentMethod === "SEPAY" ? (
+                  "Thanh toán qua SePay"
                 ) : (
-                  'Đặt hàng'
+                  "Đặt hàng"
                 )}
               </button>
 
@@ -367,8 +488,13 @@ export default function CheckoutPage() {
                 >
                   {Object.entries(sepayData.formFields).map(([field, value]) =>
                     value !== undefined ? (
-                      <input key={field} type="hidden" name={field} value={String(value)} />
-                    ) : null
+                      <input
+                        key={field}
+                        type="hidden"
+                        name={field}
+                        value={String(value)}
+                      />
+                    ) : null,
                   )}
                 </form>
               )}
@@ -376,7 +502,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

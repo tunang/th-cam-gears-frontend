@@ -1,28 +1,48 @@
-'use client';
+"use client";
 
-import { use, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { ShoppingCart, Loader2, ImageOff, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useProduct, useProductVariants } from '@/src/hooks/use-products';
-import { useAddToCart } from '@/src/hooks/use-cart';
-import useAuthStore from '@/src/store/auth.store';
-import type { ProductVariant } from '@/src/utils/types';
+import { use, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import {
+  ShoppingCart,
+  Loader2,
+  ImageOff,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useProduct, useProductVariants } from "@/src/hooks/use-products";
+import { useAddToCart } from "@/src/hooks/use-cart";
+import useAuthStore from "@/src/store/auth.store";
+import type { ProductVariant } from "@/src/utils/types";
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(price);
 }
 
-export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
-  
-  const { data: product, isLoading: isProductLoading, error: productError } = useProduct(id);
-  const { data: variants, isLoading: isVariantsLoading } = useProductVariants(id);
+
+  const {
+    data: product,
+    isLoading: isProductLoading,
+    error: productError,
+  } = useProduct(id);
+  const { data: variants, isLoading: isVariantsLoading } =
+    useProductVariants(id);
   const addToCart = useAddToCart();
 
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    null,
+  );
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -35,11 +55,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   }
 
   const selectedVariant = variants?.find((v) => v.id === selectedVariantId);
-  const allImages = product ? [product.thumbnailUrl, ...product.imageUrls].filter(Boolean) as string[] : [];
+  const allImages = product
+    ? ([product.thumbnailUrl, ...product.imageUrls].filter(Boolean) as string[])
+    : [];
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
     if (!selectedVariantId) return;
@@ -53,7 +75,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   if (isLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin" style={{ color: 'var(--p-color-text-secondary)' }} />
+        <Loader2
+          className="h-10 w-10 animate-spin"
+          style={{ color: "var(--p-color-text-secondary)" }}
+        />
       </div>
     );
   }
@@ -61,9 +86,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   if (error || !product) {
     return (
       <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div 
-          className="rounded-lg p-6 text-center text-sm" 
-          style={{ background: 'var(--p-color-bg-surface-critical)', color: 'var(--p-color-text-critical)' }}
+        <div
+          className="rounded-lg p-6 text-center text-sm"
+          style={{
+            background: "var(--p-color-bg-surface-critical)",
+            color: "var(--p-color-text-critical)",
+          }}
         >
           Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.
         </div>
@@ -74,7 +102,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
-        
         {/* Left: Images */}
         <div className="flex flex-col-reverse lg:flex-row gap-4">
           {/* Thumbnail list (Desktop vertical, Mobile horizontal) */}
@@ -86,47 +113,70 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   onClick={() => setActiveImageIndex(idx)}
                   className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all"
                   style={{
-                    borderColor: activeImageIndex === idx ? 'var(--p-color-bg-fill-brand)' : 'transparent',
-                    background: 'var(--p-color-bg-surface-secondary)'
+                    borderColor:
+                      activeImageIndex === idx
+                        ? "var(--p-color-bg-fill-brand)"
+                        : "transparent",
+                    background: "var(--p-color-bg-surface-secondary)",
                   }}
                 >
-                  <Image src={url} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" sizes="80px" />
+                  <Image
+                    src={url}
+                    alt={`Thumbnail ${idx + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="80px"
+                  />
                 </button>
               ))}
             </div>
           )}
 
           {/* Main Image */}
-          <div 
+          <div
             className="relative flex-1 aspect-square w-full overflow-hidden rounded-xl border"
-            style={{ background: 'var(--p-color-bg-surface-secondary)', borderColor: 'var(--p-color-border-secondary)' }}
+            style={{
+              background: "var(--p-color-bg-surface-secondary)",
+              borderColor: "var(--p-color-border-secondary)",
+            }}
           >
             {allImages.length > 0 ? (
-              <Image 
-                src={allImages[activeImageIndex]} 
-                alt={product.name} 
-                fill 
-                className="object-cover" 
-                sizes="(max-width: 1024px) 100vw, 50vw" 
+              <Image
+                src={allImages[activeImageIndex]}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                <ImageOff className="h-16 w-16" style={{ color: 'var(--p-color-icon-secondary)' }} />
+                <ImageOff
+                  className="h-16 w-16"
+                  style={{ color: "var(--p-color-icon-secondary)" }}
+                />
               </div>
             )}
-            
+
             {/* Arrows */}
             {allImages.length > 1 && (
               <>
                 <button
-                  onClick={() => setActiveImageIndex((i) => (i === 0 ? allImages.length - 1 : i - 1))}
+                  onClick={() =>
+                    setActiveImageIndex((i) =>
+                      i === 0 ? allImages.length - 1 : i - 1,
+                    )
+                  }
                   className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition-transform hover:scale-110"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
                 <button
-                  onClick={() => setActiveImageIndex((i) => (i === allImages.length - 1 ? 0 : i + 1))}
+                  onClick={() =>
+                    setActiveImageIndex((i) =>
+                      i === allImages.length - 1 ? 0 : i + 1,
+                    )
+                  }
                   className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition-transform hover:scale-110"
                 >
                   <ChevronRight className="h-6 w-6" />
@@ -138,47 +188,75 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
         {/* Right: Info */}
         <div className="mt-10 px-2 sm:px-0 lg:mt-0">
-          <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--p-color-text)' }}>
+          <h1
+            className="text-3xl font-bold tracking-tight"
+            style={{ color: "var(--p-color-text)" }}
+          >
             {product.name}
           </h1>
 
           <div className="mt-4 flex items-end gap-4">
-            <p className="text-3xl font-bold tracking-tight" style={{ color: 'var(--p-color-text)' }}>
-              {selectedVariant ? formatPrice(selectedVariant.price) : 'Đang tải...'}
+            <p
+              className="text-3xl font-bold tracking-tight"
+              style={{ color: "var(--p-color-text)" }}
+            >
+              {selectedVariant
+                ? formatPrice(selectedVariant.price)
+                : "Đang tải..."}
             </p>
           </div>
 
           <div className="mt-6">
             <h3 className="sr-only">Mô tả</h3>
-            <p className="text-base leading-relaxed" style={{ color: 'var(--p-color-text-secondary)' }}>
-              {product.description || 'Chưa có mô tả cho sản phẩm này.'}
+            <p
+              className="text-base leading-relaxed"
+              style={{ color: "var(--p-color-text-secondary)" }}
+            >
+              {product.description || "Chưa có mô tả cho sản phẩm này."}
             </p>
           </div>
 
-          <div className="mt-8 border-t pt-8" style={{ borderColor: 'var(--p-color-border-secondary)' }}>
+          <div
+            className="mt-8 border-t pt-8"
+            style={{ borderColor: "var(--p-color-border-secondary)" }}
+          >
             {/* Variants */}
             {variants && variants.length > 0 && (
               <div className="mb-8">
-                <h3 className="text-sm font-medium" style={{ color: 'var(--p-color-text)' }}>
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: "var(--p-color-text)" }}
+                >
                   Phân loại (Phiên bản)
                 </h3>
                 <div className="mt-3 flex flex-wrap gap-3">
                   {variants.map((v) => {
                     const isSelected = v.id === selectedVariantId;
-                    const optionLabel = v.options && Object.keys(v.options).length > 0 
-                      ? Object.entries(v.options).map(([key, val]) => `${val}`).join(' - ')
-                      : v.name;
-                      
+                    const optionLabel =
+                      v.options && Object.keys(v.options).length > 0
+                        ? Object.entries(v.options)
+                            .map(([key, val]) => `${val}`)
+                            .join(" - ")
+                        : v.name;
+
                     return (
                       <button
                         key={v.id}
                         onClick={() => setSelectedVariantId(v.id)}
                         className="rounded-md border px-4 py-2 text-sm font-medium transition-all"
                         style={{
-                          background: isSelected ? 'var(--p-color-bg-surface-selected)' : 'var(--p-color-bg-surface)',
-                          borderColor: isSelected ? 'var(--p-color-bg-fill-brand)' : 'var(--p-color-border)',
-                          color: isSelected ? 'var(--p-color-text)' : 'var(--p-color-text-secondary)',
-                          boxShadow: isSelected ? '0 0 0 1px var(--p-color-bg-fill-brand)' : 'none',
+                          background: isSelected
+                            ? "var(--p-color-bg-surface-selected)"
+                            : "var(--p-color-bg-surface)",
+                          borderColor: isSelected
+                            ? "var(--p-color-bg-fill-brand)"
+                            : "var(--p-color-border)",
+                          color: isSelected
+                            ? "var(--p-color-text)"
+                            : "var(--p-color-text-secondary)",
+                          boxShadow: isSelected
+                            ? "0 0 0 1px var(--p-color-bg-fill-brand)"
+                            : "none",
                         }}
                       >
                         {optionLabel}
@@ -191,10 +269,16 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             {/* Quantity */}
             <div className="mb-8">
-              <h3 className="text-sm font-medium" style={{ color: 'var(--p-color-text)' }}>
+              <h3
+                className="text-sm font-medium"
+                style={{ color: "var(--p-color-text)" }}
+              >
                 Số lượng
               </h3>
-              <div className="mt-3 flex items-center w-32 rounded-md border" style={{ borderColor: 'var(--p-color-border)' }}>
+              <div
+                className="mt-3 flex items-center w-32 rounded-md border"
+                style={{ borderColor: "var(--p-color-border)" }}
+              >
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -206,9 +290,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   type="number"
                   min="1"
                   value={quantity}
-                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  onChange={(e) =>
+                    setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+                  }
                   className="h-11 w-full text-center text-sm font-semibold focus:outline-none"
-                  style={{ color: 'var(--p-color-text)' }}
+                  style={{ color: "var(--p-color-text)" }}
                 />
                 <button
                   type="button"
@@ -227,25 +313,31 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 disabled={addToCart.isPending || !selectedVariantId}
                 className="flex flex-1 items-center justify-center gap-2 rounded-md py-4 text-base font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-70"
                 style={{
-                  background: 'var(--p-color-bg-fill-brand)',
-                  color: 'var(--p-color-text-brand-on-bg-fill)',
-                  boxShadow: 'var(--p-shadow-button-primary)',
+                  background: "var(--p-color-bg-fill-brand)",
+                  color: "var(--p-color-text-brand-on-bg-fill)",
+                  boxShadow: "var(--p-shadow-button-primary)",
                 }}
                 onMouseEnter={(e) => {
                   if (!addToCart.isPending && selectedVariantId) {
-                    e.currentTarget.style.background = 'var(--p-color-bg-fill-brand-hover)';
-                    e.currentTarget.style.boxShadow = 'var(--p-shadow-button-primary-hover)';
+                    e.currentTarget.style.background =
+                      "var(--p-color-bg-fill-brand-hover)";
+                    e.currentTarget.style.boxShadow =
+                      "var(--p-shadow-button-primary-hover)";
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'var(--p-color-bg-fill-brand)';
-                  e.currentTarget.style.boxShadow = 'var(--p-shadow-button-primary)';
+                  e.currentTarget.style.background =
+                    "var(--p-color-bg-fill-brand)";
+                  e.currentTarget.style.boxShadow =
+                    "var(--p-shadow-button-primary)";
                 }}
                 onMouseDown={(e) => {
-                  e.currentTarget.style.boxShadow = '0px 3px 0px 0px rgb(0, 0, 0) inset';
+                  e.currentTarget.style.boxShadow =
+                    "0px 3px 0px 0px rgb(0, 0, 0) inset";
                 }}
                 onMouseUp={(e) => {
-                  e.currentTarget.style.boxShadow = 'var(--p-shadow-button-primary-hover)';
+                  e.currentTarget.style.boxShadow =
+                    "var(--p-shadow-button-primary-hover)";
                 }}
               >
                 {addToCart.isPending ? (
@@ -253,12 +345,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 ) : (
                   <>
                     <ShoppingCart className="h-5 w-5" />
-                    {!isAuthenticated ? 'Đăng nhập để mua' : 'Thêm vào giỏ hàng'}
+                    {!isAuthenticated
+                      ? "Đăng nhập để mua"
+                      : "Thêm vào giỏ hàng"}
                   </>
                 )}
               </button>
             </div>
-            
           </div>
         </div>
       </div>

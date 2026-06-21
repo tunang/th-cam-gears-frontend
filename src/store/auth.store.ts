@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface User {
   id: string;
@@ -50,7 +50,7 @@ const useAuthStore = create<AuthState>()(
         }),
     }),
     {
-      name: 'th-cam-gears-auth',
+      name: "th-cam-gears-auth",
       // Only persist tokens and user, derive isAuthenticated on rehydration
       partialize: (state) => ({
         user: state.user,

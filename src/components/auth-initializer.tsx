@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import useAuthStore from '@/src/store/auth.store';
-import api from '@/src/utils/api';
+import { useEffect } from "react";
+import useAuthStore from "@/src/store/auth.store";
+import api from "@/src/utils/api";
 
 /**
  * Runs once on app mount. If an accessToken exists in the persisted
@@ -18,7 +18,7 @@ export default function AuthInitializer() {
 
     const validateSession = async () => {
       try {
-        const { data } = await api.get('/auth/me');
+        const { data } = await api.get("/auth/me");
         setUser(data);
       } catch {
         // The interceptor already tried refreshing.

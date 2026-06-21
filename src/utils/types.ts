@@ -88,11 +88,11 @@ export interface Payment {
   id: string;
   orderId: string;
   amount: string;
-  method: 'SEPAY' | 'COD';
+  method: "SEPAY" | "COD";
   content: string;
   transactionId: string | null;
   paymentLink: string | null;
-  status: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+  status: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
   paidAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -111,7 +111,15 @@ export interface Order {
   id: string;
   orderNumber: string;
   platform: string;
-  status: 'PENDING' | 'SHIPPING' | 'COMPLETED' | 'CANCELLED' | 'LOST' | 'RETURING' | 'RETURNED' | 'REFUNDED';
+  status:
+    | "PENDING"
+    | "SHIPPING"
+    | "COMPLETED"
+    | "CANCELLED"
+    | "LOST"
+    | "RETURING"
+    | "RETURNED"
+    | "REFUNDED";
   totalAmount: string;
   trackingNumber: string | null;
   orderDate: string | null;

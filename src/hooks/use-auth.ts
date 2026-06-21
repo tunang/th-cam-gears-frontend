@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import api from '@/src/utils/api';
-import useAuthStore from '@/src/store/auth.store';
-import type { User } from '@/src/store/auth.store';
-import type { LoginFormData } from '@/src/utils/auth.schema';
-import type { AxiosError } from 'axios';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import api from "@/src/utils/api";
+import useAuthStore from "@/src/store/auth.store";
+import type { User } from "@/src/store/auth.store";
+import type { LoginFormData } from "@/src/utils/auth.schema";
+import type { AxiosError } from "axios";
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -39,12 +39,12 @@ export function useLogin() {
 
   return useMutation<LoginResponse, AxiosError<ApiError>, LoginFormData>({
     mutationFn: async (data) => {
-      const response = await api.post<LoginResponse>('/auth/login', data);
+      const response = await api.post<LoginResponse>("/auth/login", data);
       return response.data;
     },
     onSuccess: (data) => {
       setAuth(data.user, data.accessToken, data.refreshToken);
-      router.push('/');
+      router.push("/");
     },
   });
 }
@@ -62,14 +62,11 @@ export function useRegister() {
 
   return useMutation<RegisterResponse, AxiosError<ApiError>, RegisterPayload>({
     mutationFn: async (data) => {
-      const response = await api.post<RegisterResponse>(
-        '/auth/register',
-        data,
-      );
+      const response = await api.post<RegisterResponse>("/auth/register", data);
       return response.data;
     },
     onSuccess: () => {
-      router.push('/login?registered=true');
+      router.push("/login?registered=true");
     },
   });
 }
@@ -86,7 +83,7 @@ export function useGoogleAuth() {
     { idToken: string }
   >({
     mutationFn: async ({ idToken }) => {
-      const response = await api.post<GoogleLoginResponse>('/auth/google', {
+      const response = await api.post<GoogleLoginResponse>("/auth/google", {
         idToken,
       });
       return response.data;
@@ -94,7 +91,7 @@ export function useGoogleAuth() {
     onSuccess: (data) => {
       // Normalize snake_case keys from Google login endpoint
       setAuth(data.user, data.access_token, data.refresh_token);
-      router.push('/');
+      router.push("/");
     },
   });
 }
@@ -105,9 +102,9 @@ export function useMe() {
   const { accessToken, setUser, logout } = useAuthStore();
 
   return useQuery<User, AxiosError<ApiError>>({
-    queryKey: ['auth', 'me'],
+    queryKey: ["auth", "me"],
     queryFn: async () => {
-      const response = await api.get<User>('/auth/me');
+      const response = await api.get<User>("/auth/me");
       return response.data;
     },
     enabled: !!accessToken,
@@ -125,14 +122,14 @@ export function useLogout() {
 
   return useMutation<{ message: string }, AxiosError<ApiError>>({
     mutationFn: async () => {
-      const response = await api.get<{ message: string }>('/auth/logout');
+      const response = await api.get<{ message: string }>("/auth/logout");
       return response.data;
     },
     onSettled: () => {
       // Always clear state, even if the API call fails
       logout();
       queryClient.clear();
-      router.push('/login');
+      router.push("/login");
     },
   });
 }

@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { ShoppingCart, ImageOff } from 'lucide-react';
-import type { Product } from '@/src/utils/types';
-import useAuthStore from '@/src/store/auth.store';
-import { useAddToCart } from '@/src/hooks/use-cart';
-import { useState } from 'react';
+import Image from "next/image";
+import Link from "next/link";
+import { ShoppingCart, ImageOff } from "lucide-react";
+import type { Product } from "@/src/utils/types";
+import useAuthStore from "@/src/store/auth.store";
+import { useAddToCart } from "@/src/hooks/use-cart";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -14,10 +14,16 @@ interface ProductCardProps {
 }
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(price);
 }
 
-export default function ProductCard({ product, onAuthRequired }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  onAuthRequired,
+}: ProductCardProps) {
   const { isAuthenticated } = useAuthStore();
   const addToCart = useAddToCart();
   const [added, setAdded] = useState(false);
@@ -38,23 +44,23 @@ export default function ProductCard({ product, onAuthRequired }: ProductCardProp
       href={`/products/${product.id}`}
       className="group relative flex flex-col rounded-xl overflow-hidden transition-all duration-200"
       style={{
-        background: 'var(--p-color-bg-surface)',
-        border: '1px solid var(--p-color-border)',
-        boxShadow: 'var(--p-shadow-100)',
+        background: "var(--p-color-bg-surface)",
+        border: "1px solid var(--p-color-border)",
+        boxShadow: "var(--p-shadow-100)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = 'var(--p-shadow-300)';
-        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = "var(--p-shadow-300)";
+        e.currentTarget.style.transform = "translateY(-2px)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = 'var(--p-shadow-100)';
-        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = "var(--p-shadow-100)";
+        e.currentTarget.style.transform = "translateY(0)";
       }}
     >
       {/* Image */}
       <div
         className="relative aspect-square overflow-hidden"
-        style={{ background: 'var(--p-color-bg-surface-secondary)' }}
+        style={{ background: "var(--p-color-bg-surface-secondary)" }}
       >
         {product.thumbnailUrl ? (
           <Image
@@ -66,7 +72,10 @@ export default function ProductCard({ product, onAuthRequired }: ProductCardProp
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <ImageOff className="h-10 w-10" style={{ color: 'var(--p-color-icon-secondary)' }} />
+            <ImageOff
+              className="h-10 w-10"
+              style={{ color: "var(--p-color-icon-secondary)" }}
+            />
           </div>
         )}
 
@@ -77,8 +86,8 @@ export default function ProductCard({ product, onAuthRequired }: ProductCardProp
             disabled={addToCart.isPending}
             className="flex w-full items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors"
             style={{
-              background: 'var(--p-color-bg-fill-brand)',
-              color: 'var(--p-color-text-brand-on-bg-fill)',
+              background: "var(--p-color-bg-fill-brand)",
+              color: "var(--p-color-text-brand-on-bg-fill)",
             }}
             aria-label={`Xem ${product.name}`}
           >
@@ -92,14 +101,14 @@ export default function ProductCard({ product, onAuthRequired }: ProductCardProp
       <div className="flex flex-col gap-1 p-3">
         <h3
           className="line-clamp-2 text-sm font-semibold leading-snug"
-          style={{ color: 'var(--p-color-text)' }}
+          style={{ color: "var(--p-color-text)" }}
         >
           {product.name}
         </h3>
         {product.description && (
           <p
             className="line-clamp-2 text-xs"
-            style={{ color: 'var(--p-color-text-secondary)' }}
+            style={{ color: "var(--p-color-text-secondary)" }}
           >
             {product.description}
           </p>

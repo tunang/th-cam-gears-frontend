@@ -1,11 +1,11 @@
-import axios from 'axios';
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import useAuthStore from '@/src/store/auth.store';
+import axios from "axios";
+import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import useAuthStore from "@/src/store/auth.store";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -50,9 +50,9 @@ api.interceptors.response.use(
     if (
       error.response?.status !== 401 ||
       originalRequest._retry ||
-      originalRequest.url?.includes('/auth/login') ||
-      originalRequest.url?.includes('/auth/register') ||
-      originalRequest.url?.includes('/auth/refresh')
+      originalRequest.url?.includes("/auth/login") ||
+      originalRequest.url?.includes("/auth/register") ||
+      originalRequest.url?.includes("/auth/refresh")
     ) {
       return Promise.reject(error);
     }
@@ -75,8 +75,8 @@ api.interceptors.response.use(
     if (!refreshToken) {
       isRefreshing = false;
       logout();
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
       }
       return Promise.reject(error);
     }
@@ -84,7 +84,7 @@ api.interceptors.response.use(
     try {
       // Call refresh endpoint with the refresh token as Bearer
       const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/refresh`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/auth/refresh`,
         {},
         {
           headers: {
@@ -106,8 +106,8 @@ api.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError as AxiosError);
       logout();
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
       }
       return Promise.reject(refreshError);
     } finally {
