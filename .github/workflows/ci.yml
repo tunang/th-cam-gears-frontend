@@ -32,3 +32,35 @@ jobs:
 
       - name: Run lint
         run: npm run lint
+
+  deploy:
+    name: Deploy to EC2
+    needs: lint
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1
+        env:
+          FRONTEND_ENV: ${{ secrets.FRONTEND_ENV }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 20m
+          envs: FRONTEND_ENV
+          script: |
+            set -e
+            cd ~/thcamgears-app/th-cam-gears-frontend
+            git pull --ff-only origin master
+
+            if [ -z "$FRONTEND_ENV" ]; then
+              echo "GitHub secret FRONTEND_ENV is empty or undefined"
+              exit 1
+            fi
+            umask 077
+            printf '%s\n' "$FRONTEND_ENV" > .env
+
+            docker compose up -d --build --remove-orphans
+            docker compose ps
